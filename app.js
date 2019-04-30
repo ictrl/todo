@@ -6,7 +6,7 @@ const date = require(__dirname + "/getDate.js");
 const mongoose = require("mongoose");
 const app = express();
             
-mongoose.connect("mongodb+srv://admin:samrat.online@cluster0-wdtlh.mongodb.net/todolistDB", {useNewUrlParser: true});
+mongoose.connect("mongodb+srv://admin:<password>@cluster0-wdtlh.mongodb.net/todolistDB", {useNewUrlParser: true});
 const itemsSchema = {
     name : String
 };
