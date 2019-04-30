@@ -3,10 +3,30 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const date = require(__dirname + "/getDate.js");
+const mongoose = require("mongoose");
 const app = express();
+const PORT = 3000;
+            
+mongoose.connect("mongodb+srv://admin:samrat.online@cluster0-wdtlh.mongodb.net/todolistDB", {useNewUrlParser: true});
+const itemsSchema = {
+    name : String
+};
 
-let items = [];
-let works = [];
+const Item = mongoose.model("Item", itemsSchema); 
+
+const Bath = new Item({
+    name : "Bath"
+});
+
+const Exercise = new Item({
+    name : "Exercise"
+});
+
+const Breakfast = new Item({
+    name : "Breakfast"
+});
+
+const defaultItems = [Bath, Exercise, Breakfast];
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -16,38 +36,52 @@ app.use(express.static("public"));
 
 app.set('view engine', 'ejs');
 
-app.get("/", function (req, res) {
+app.get("/", function (req, res) { 
 
     let day = date.getDate();
-    // let day = date.getDay();
 
+    Item.find({}, function(err, results){ 
+   if (results.length === 0){
+    Item.insertMany(defaultItems, function(err){
+        if(err){
+            console.log(err);
+        }else{
+            console.log("success");
+        }
+        res.redirect('/');
+    });
+   }else{
     res.render("list", {
         titleOfList: day,
-        newItems: items,
+        newItems: results,
+    });
+   }
     });
 });
 
 app.post('/', function (req, res) {
 
     let item = req.body.task;
-
-    if (req.body.btn === 'Work') {
-        works.push(item);
-        res.redirect('/work');
-    } else {
-        items.push(item);
-        res.redirect('/');
-    }
+    Item.insertMany({name : item});
+    res.redirect('/');
 });
 
-app.get("/work", function (req, res) {
-    res.render("list", {
-        titleOfList: "Work",
-        newItems: works,
+app.post("/delete", function(req, res){
+    
+    let chkID = req.body.checkID;
+    chkID = chkID.trim();
+
+    Item.findByIdAndRemove(chkID, function(err){
+        if(err){
+            console.log(err);
+            res.redirect("/");            
+        }else{
+            console.log("deleted");
+            res.redirect("/");
+        }
     });
-
 });
 
-app.listen(3000, function () {
-    console.log("SERVER IS RUNNING ON 3000 PORT.");
+app.listen(PORT, function () {
+    console.log("SERVER IS RUNNING ON " + PORT + " PORT.");
 });
