@@ -6,10 +6,8 @@ const date = require(__dirname + "/getDate.js");
 const mongoose = require("mongoose");
 const app = express();
 const PORT = 3000;
-
-// let items = [];
-// let works = [];
-mongoose.connect("mongodb://localhost:27017/todolistDB", {useNewUrlParser: true});
+            
+mongoose.connect("mongodb+srv://admin:samrat.online@cluster0-wdtlh.mongodb.net/todolistDB", {useNewUrlParser: true});
 const itemsSchema = {
     name : String
 };
@@ -41,7 +39,6 @@ app.set('view engine', 'ejs');
 app.get("/", function (req, res) { 
 
     let day = date.getDate();
-    // let day = date.getDay();
 
     Item.find({}, function(err, results){ 
    if (results.length === 0){
@@ -62,19 +59,6 @@ app.get("/", function (req, res) {
     });
 });
 
-// app.post('/', function (req, res) {
-
-//     let item = req.body.task;
-
-//     if (req.body.btn === 'Work') {
-//         works.push(item);
-//         res.redirect('/work');
-//     } else {
-//         items.push(item);
-//         res.redirect('/');
-//     }
-// });
-
 app.post('/', function (req, res) {
 
     let item = req.body.task;
@@ -84,7 +68,8 @@ app.post('/', function (req, res) {
 
 app.post("/delete", function(req, res){
     
-    const chkID = req.body.checkID;
+    let chkID = req.body.checkID;
+    chkID = chkID.trim();
 
     Item.findByIdAndRemove(chkID, function(err){
         if(err){
@@ -95,14 +80,6 @@ app.post("/delete", function(req, res){
             res.redirect("/");
         }
     });
-});
-
-app.get("/work", function (req, res) {
-    res.render("list", {
-        titleOfList: "Work",
-        newItems: works,
-    });
-
 });
 
 app.listen(PORT, function () {
