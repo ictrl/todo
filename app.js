@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const date = require(__dirname + "/getDate.js");
 const mongoose = require("mongoose");
 const app = express();
-const PORT = 3000;
             
 mongoose.connect("mongodb+srv://admin:samrat.online@cluster0-wdtlh.mongodb.net/todolistDB", {useNewUrlParser: true});
 const itemsSchema = {
@@ -82,6 +81,11 @@ app.post("/delete", function(req, res){
     });
 });
 
-app.listen(PORT, function () {
-    console.log("SERVER IS RUNNING ON " + PORT + " PORT.");
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3000;
+}
+
+app.listen(port, function () {
+    console.log("SERVER IS RUNNING ON " + port + " PORT.");
 });
